@@ -4,37 +4,26 @@
  */
 package services.change_detection;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.sql.SQLException;
-import java.util.Properties;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import org.diachron.detection.change_detection_utils.ChangesDetector;
+import org.diachron.detection.repositories.SesameVirtRep;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.openrdf.query.MalformedQueryException;
-import org.openrdf.query.QueryEvaluationException;
-import org.openrdf.query.QueryLanguage;
-import org.openrdf.query.TupleQuery;
-import org.openrdf.query.TupleQueryResultHandler;
-import org.openrdf.query.TupleQueryResultHandlerException;
+import org.openrdf.query.*;
 import org.openrdf.query.resultio.sparqljson.SPARQLResultsJSONWriter;
 import org.openrdf.query.resultio.sparqlxml.SPARQLResultsXMLWriter;
 import org.openrdf.query.resultio.text.csv.SPARQLResultsCSVWriter;
 import org.openrdf.query.resultio.text.tsv.SPARQLResultsTSVWriter;
 import org.openrdf.repository.RepositoryException;
-import org.diachron.detection.repositories.SesameVirtRep;
 import services.Configuration;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.sql.SQLException;
 
 /**
  * REST Web Service

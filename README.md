@@ -19,4 +19,4 @@ Module Setup and Deployment
 ===========================
 The project is fully compliant with Maven and can be built with a mvn install. The two additional dependencies are automatically installed at the initialization phase.
 
-Deployment can be made into any web-application container (jetty, tomcat, jboss). The configuration file is loaded in ```./config.properties```
+Deployment can be made into any web-application container (jetty, tomcat, jboss). The configuration file is loaded in ```./detection-repair.properties```

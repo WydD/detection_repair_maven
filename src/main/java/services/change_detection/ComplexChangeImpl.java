@@ -4,25 +4,17 @@
  */
 package services.change_detection;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Properties;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.Path;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import org.diachron.detection.change_detection_utils.JSONMessagesParser;
 import org.diachron.detection.complex_change.CCDefinitionError.CODE;
 import org.diachron.detection.complex_change.CCManager;
 import org.diachron.detection.repositories.JDBCVirtuosoRep;
 import services.Configuration;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * REST Web Service
@@ -31,8 +23,6 @@ import services.Configuration;
  */
 @Path("complex_change")
 public class ComplexChangeImpl {
-
-    private static String propFile = "C:/config.properties";
 
     /** Creates a new instance of ComplexChangeImpl */
     public ComplexChangeImpl() {
@@ -146,21 +136,12 @@ public class ComplexChangeImpl {
     @Path("{com_change}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteCCJSON(@PathParam("com_change") String name) {
-        Properties properties = new Properties();
         String message = null;
         int code;
         boolean result;
-        try {
-            properties.load(new FileInputStream(propFile));
-//            properties.load(this.getClass().getResourceAsStream(propFile));
-        } catch (IOException ex) {
-            result = false;
-            String json = "{ \"Message\" : \"Exception Occured: " + ex.getMessage() + ", \"Result\" : " + result + " }";
-            return Response.status(400).entity(json).build();
-        }
         CCManager manager = null;
         try {
-            manager = new CCManager(properties);
+            manager = new CCManager(Configuration.PROPERTIES);
         } catch (Exception ex) {
             result = false;
             String json = "{ \"Message\" : \"Exception Occured: " + ex.getMessage() + ", \"Result\" : " + result + " }";
@@ -255,18 +236,9 @@ public class ComplexChangeImpl {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response defineCCJSON(String inputMessage) {
-        Properties properties = new Properties();
-        try {
-            properties.load(new FileInputStream(propFile));
-//            properties.load(this.getClass().getResourceAsStream(propFile));
-        } catch (IOException ex) {
-            boolean result = false;
-            String json = "{ \"Message\" : \"Exception Occured: " + ex.getMessage() + ", \"Result\" : " + result + " }";
-            return Response.status(400).entity(json).build();
-        }
         CCManager ccDef = null;
         try {
-            ccDef = JSONMessagesParser.createCCDefinition(properties, inputMessage);
+            ccDef = JSONMessagesParser.createCCDefinition(Configuration.PROPERTIES, inputMessage);
         } catch (Exception ex) {
             boolean result = false;
             String json = "{ \"Message\" : \"Exception Occured: " + ex.getMessage() + ", \"Result\" : " + result + " }";

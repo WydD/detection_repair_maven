@@ -1,19 +1,22 @@
 package services;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 /**
  *
  */
 public class Configuration {
-    public static final String propFile = "./config.properties";
+    public static final String propFile = "./detection-repair.properties";
 
     public static Properties PROPERTIES = new Properties();
 
     static {
         try {
-            PROPERTIES.load(Configuration.class.getResourceAsStream(propFile));
+            InputStream is = Configuration.class.getResourceAsStream(propFile);
+            if (is != null)
+                PROPERTIES.load(is);
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
