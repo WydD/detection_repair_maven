@@ -17,7 +17,6 @@ Finally field Simple_Changes_Folder refers on tomcat-accessible folder which con
 
 Module Setup and Deployment
 ===========================
-The modules are created as maven projects using Netbeans 7.0.1. The created war file (ForthMaven-1.0.war) is located in folder target and it was built w.r.t. the configuration file config.properties and it was tested successfully on a Tomcat Server 7.0.54 (Windows 7). Folder src/main/java/clients contains some small client files which test all the functionalities of both the Change Detection and the Validation/Repair modules. 
+The project is fully compliant with Maven and can be built with a mvn install. The two additional dependencies are automatically installed at the initialization phase.
 
-The pom file contains all the dependencies which can be downloaded from the central Maven repository. However, there are two external dependencies which have to be manualy imported. The corresponding jar files can be found in folder: Libraries and  the commands to import them in the local Maven repository can be found in file installJars.bat.
-
+Deployment can be made into any web-application container (jetty, tomcat, jboss). The configuration file is loaded in ```./config.properties```
