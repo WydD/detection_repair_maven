@@ -19,6 +19,7 @@ import org.diachron.repair.master.Validation;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import services.Configuration;
 
 /**
  * REST Web Service
@@ -27,8 +28,6 @@ import org.json.simple.parser.ParseException;
  */
 @Path("validation")
 public class ValidationImpl {
-
-    private static String propFile = "C:/config.properties";
 
     /** Creates a new instance of ValidationImpl */
     public ValidationImpl() {
@@ -56,22 +55,14 @@ public class ValidationImpl {
                 ///
                 Results result = null;
                 JSONObject obj = new JSONObject();
-                try {
-                    Properties properties = new Properties();
-                    properties.load(new FileInputStream(propFile));
 //                    result = Validate.execute(properties, dataset, constOntology, true);
-                    String virtuoso = properties.getProperty("Repository_IP");
-                    String username = properties.getProperty("Repository_Username");
-                    String password = properties.getProperty("Repository_Password");
-                    String port = properties.getProperty("Repository_Port");
-                    Validation validation = new Validation();
-                    String[] arguments = {virtuoso, port, username, password, dataset, constOntology, Boolean.toString(true)};
-                    result = validation.run(arguments);
-                } catch (IOException ex) {
-                    obj.put("Success", false);
-                    obj.put("Message", ex.getMessage());
-                    return Response.status(400).entity(obj.toJSONString()).build();
-                }
+                String virtuoso = Configuration.PROPERTIES.getProperty("Repository_IP");
+                String username = Configuration.PROPERTIES.getProperty("Repository_Username");
+                String password = Configuration.PROPERTIES.getProperty("Repository_Password");
+                String port = Configuration.PROPERTIES.getProperty("Repository_Port");
+                Validation validation = new Validation();
+                String[] arguments = {virtuoso, port, username, password, dataset, constOntology, Boolean.toString(true)};
+                result = validation.run(arguments);
                 obj.put("Success", true);
                 obj.put("Result", result.getType());
                 if (getInvalidities) {

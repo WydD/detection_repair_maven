@@ -22,6 +22,7 @@ import org.diachron.detection.change_detection_utils.JSONMessagesParser;
 import org.diachron.detection.complex_change.CCDefinitionError.CODE;
 import org.diachron.detection.complex_change.CCManager;
 import org.diachron.detection.repositories.JDBCVirtuosoRep;
+import services.Configuration;
 
 /**
  * REST Web Service
@@ -85,21 +86,11 @@ public class ComplexChangeImpl {
         boolean result = false;
         String message = null;
         int code = 0;
-        Properties prop = new Properties();
-        try {
-            prop.load(new FileInputStream(propFile));
-//            prop.load(this.getClass().getResourceAsStream(propFile));
-        } catch (IOException ex) {
-            message = ex.getMessage();
-            result = false;
-            code = 400;
-            String json = "{ \"Message\" : " + message + ", \"Result\" : " + result + " }";
-            return Response.status(code).entity(json).build();
-        }
-        String ip = prop.getProperty("Repository_IP");
-        String username = prop.getProperty("Repository_Username");
-        String password = prop.getProperty("Repository_Password");
-        int port = Integer.parseInt(prop.getProperty("Repository_Port"));
+
+        String ip = Configuration.PROPERTIES.getProperty("Repository_IP");
+        String username = Configuration.PROPERTIES.getProperty("Repository_Username");
+        String password = Configuration.PROPERTIES.getProperty("Repository_Password");
+        int port = Integer.parseInt(Configuration.PROPERTIES.getProperty("Repository_Port"));
         JDBCVirtuosoRep jdbcRep = null;
         try {
             jdbcRep = new JDBCVirtuosoRep(ip, port, username, password);
@@ -108,7 +99,7 @@ public class ComplexChangeImpl {
             String json = "{ \"Message\" : \"Exception Occured: " + ex.getMessage() + ", \"Result\" : " + result + " }";
             return Response.status(400).entity(json).build();
         }
-        String ontology = prop.getProperty("Changes_Ontology");
+        String ontology = Configuration.PROPERTIES.getProperty("Changes_Ontology");
         String query = "select ?json from <" + ontology + "> where { ?s co:name \"" + name + "\"; co:json ?json. }";
         ResultSet res = jdbcRep.executeSparqlQuery(query, false);
         try {

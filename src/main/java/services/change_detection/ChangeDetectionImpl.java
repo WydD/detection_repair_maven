@@ -34,6 +34,7 @@ import org.openrdf.query.resultio.text.csv.SPARQLResultsCSVWriter;
 import org.openrdf.query.resultio.text.tsv.SPARQLResultsTSVWriter;
 import org.openrdf.repository.RepositoryException;
 import org.diachron.detection.repositories.SesameVirtRep;
+import services.Configuration;
 
 /**
  * REST Web Service
@@ -42,8 +43,6 @@ import org.diachron.detection.repositories.SesameVirtRep;
  */
 @Path("change_detection")
 public class ChangeDetectionImpl {
-
-    private static String propFile = "C:/config.properties";
 
     public ChangeDetectionImpl() {
     }
@@ -99,22 +98,10 @@ public class ChangeDetectionImpl {
                 if (oldVersion == null || newVersion == null || ccs == null) {
                     throw new ParseException(-1);
                 }
-                ///
-                Properties properties = new Properties();
-                try {
-                    properties.load(new FileInputStream(propFile));
-//                    properties.load(this.getClass().getResourceAsStream(propFile));
-                } catch (IOException ex) {
-                    String message = ex.getMessage();
-                    boolean result = false;
-                    int code = 400;
-                    String json = "{ \"Message\" : " + message + ", \"Result\" : " + result + " }";
-                    return Response.status(code).entity(json).build();
-                }
-                ///
+
                 ChangesDetector detector = null;
                 try {
-                    detector = new ChangesDetector(properties);
+                    detector = new ChangesDetector(Configuration.PROPERTIES);
                 } catch (ClassNotFoundException | RepositoryException | SQLException ex) {
                     String json = "{ \"Success\" : false, "
                             + "\"Message\" : \"Exception Occured: " + ex.getMessage() + " \" }";
@@ -163,16 +150,14 @@ public class ChangeDetectionImpl {
     @Produces(MediaType.APPLICATION_JSON)
     public Response queryChangesOntologyGet(@QueryParam("query") String query,
             @QueryParam("format") String format) {
-        Properties prop = new Properties();
         OutputStream output = null;
         try {
-            prop.load(new FileInputStream(propFile));
 //            prop.load(this.getClass().getResourceAsStream(propFile));
-            String ip = prop.getProperty("Repository_IP");
-            String username = prop.getProperty("Repository_Username");
-            String password = prop.getProperty("Repository_Password");
-            String changesOntol = prop.getProperty("Changes_Ontology");
-            int port = Integer.parseInt(prop.getProperty("Repository_Port"));
+            String ip = Configuration.PROPERTIES.getProperty("Repository_IP");
+            String username = Configuration.PROPERTIES.getProperty("Repository_Username");
+            String password = Configuration.PROPERTIES.getProperty("Repository_Password");
+            String changesOntol = Configuration.PROPERTIES.getProperty("Changes_Ontology");
+            int port = Integer.parseInt(Configuration.PROPERTIES.getProperty("Repository_Port"));
             SesameVirtRep sesame = new SesameVirtRep(ip, port, username, password);
             query = query.replace(" where ", " from <" + changesOntol + "> ");
             TupleQuery tupleQuery = sesame.getCon().prepareTupleQuery(QueryLanguage.SPARQL, query);
@@ -209,8 +194,6 @@ public class ChangeDetectionImpl {
             }
             tupleQuery.evaluate(writer);
         } catch (MalformedQueryException | QueryEvaluationException | TupleQueryResultHandlerException | RepositoryException ex) {
-            return Response.status(400).entity(ex.getMessage()).build();
-        } catch (IOException ex) {
             return Response.status(400).entity(ex.getMessage()).build();
         }
         return Response.status(200).entity(output.toString()).build();
@@ -264,15 +247,12 @@ public class ChangeDetectionImpl {
                 if (format == null || query == null) {
                     throw new ParseException(-1);
                 }
-                ///
-                Properties prop = new Properties();
-                prop.load(new FileInputStream(propFile));
 //                prop.load(this.getClass().getResourceAsStream(propFile));
-                String ip = prop.getProperty("Repository_IP");
-                String username = prop.getProperty("Repository_Username");
-                String password = prop.getProperty("Repository_Password");
-                String changesOntol = prop.getProperty("Changes_Ontology");
-                int port = Integer.parseInt(prop.getProperty("Repository_Port"));
+                String ip = Configuration.PROPERTIES.getProperty("Repository_IP");
+                String username = Configuration.PROPERTIES.getProperty("Repository_Username");
+                String password = Configuration.PROPERTIES.getProperty("Repository_Password");
+                String changesOntol = Configuration.PROPERTIES.getProperty("Changes_Ontology");
+                int port = Integer.parseInt(Configuration.PROPERTIES.getProperty("Repository_Port"));
                 SesameVirtRep sesame = new SesameVirtRep(ip, port, username, password);
                 query = query.replace(" where ", " from <" + changesOntol + "> ");
                 TupleQuery tupleQuery = sesame.getCon().prepareTupleQuery(QueryLanguage.SPARQL, query);
@@ -311,8 +291,6 @@ public class ChangeDetectionImpl {
                 tupleQuery.evaluate(writer);
             }
         } catch (MalformedQueryException | QueryEvaluationException | TupleQueryResultHandlerException | RepositoryException ex) {
-            return Response.status(400).entity(ex.getMessage()).build();
-        } catch (IOException ex) {
             return Response.status(400).entity(ex.getMessage()).build();
         } catch (ParseException ex) {
             String message = "JSON input message could not be parsed.";
