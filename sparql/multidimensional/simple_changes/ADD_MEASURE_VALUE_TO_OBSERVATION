@@ -5,11 +5,11 @@ INSERT INTO <changesOntology> {
 	co:addMeasVToOb_p3 ?v.
 }
 WHERE {
-GRAPH <v2> { 
-?m a diachron:MeasureProperty.
+GRAPH <v2> {
 ?o diachron:hasRecordAttribute ?ratt.
 ?ratt diachron:predicate ?m;
 	  diachron:object ?v.
+	  FILTER(strEnds(str(?m), "-measure"))
 }
 FILTER NOT EXISTS { GRAPH <v1> {
 ?o diachron:hasRecordAttribute ?ratt.
